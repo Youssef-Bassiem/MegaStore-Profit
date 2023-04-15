@@ -76,6 +76,20 @@ X_Data = mega_store.drop(['Profit'] ,axis = 1)
 print(X_Data.shape)
 print(corr)
 
+y=mega_store["Profit"]
+c=mega_store.drop(['Profit'] ,axis = 1)
+
+#anova
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_classif
+fvalue_Best = SelectKBest(f_classif, k=9)
+X_kbest = fvalue_Best.fit_transform(c, y)
+print("correlation",X_kbest)
+
+# import statsmodels.api as sm
+# from statsmodels.formula.api import ols
+# cw_lm=ols('value ~ C(treatments)', data=mega_store).fit() #Specify C for Categorical
+# print("correlation",sm.stats.anova_lm(cw_lm, typ=2))
 
 
 # #lasso reg
@@ -146,7 +160,7 @@ y=mega_store["Profit"]
 model = make_pipeline(PolynomialFeatures(degree=2), LinearRegression(fit_intercept = False))
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=0)
+    X_kbest, y, test_size=0.2, random_state=0)
 #fit model
 model.fit(X_train, y_train)
 
@@ -161,9 +175,12 @@ X=mega_store[["Ship Day","Ship Month","Ship Year"]]
 y=mega_store["Profit"]
 # X = mega_store.drop(['Profit'] ,axis = 1)
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=10,shuffle=True)
+    X_kbest, y, test_size=0.2, random_state=10,shuffle=True)
 
 model = Ridge(alpha=1.0)
 model.fit(X_train, y_train)
 
 print("Mean Square Error ridge", metrics.mean_squared_error(y_test,  model.predict(X_test)))
+
+
+
