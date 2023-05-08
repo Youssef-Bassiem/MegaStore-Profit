@@ -131,7 +131,7 @@ print(" AdaBoost error is: " + str(error_ad))
 
 #2 DecisionTreeClassifier
 from sklearn import tree
-clf = tree.DecisionTreeClassifier(max_depth = 17)
+clf = tree.DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=17)
 clf.fit(X_train, Y_train)
 y_pred = clf.predict(X_test)
 error_d = np.mean(y_pred != Y_test)
@@ -144,3 +144,5 @@ bay.fit(X_train, Y_train)
 y_prede = bay.predict(X_test)
 error = np.mean(y_prede != Y_test)
 print(" NAIVE BAYS error is: " + str(error))
+
+
