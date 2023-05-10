@@ -1,0 +1,64 @@
+AdaBoostClassifier :
+  -DecisionTreeClassifier(max_depth = 14)
+	*tested values for max_depth(5,14,20)
+	*best value is 14
+	*becasue (20)max_depth too high, then the decision tree might simply overfit(higher error)
+		 (14)good depth for the tree to grow
+                 (5) too little flexibility to capture the patterns and interactions(higher error)
+
+  -algorithm = "SAMME"
+	*tested values for max_depth("SAMME","SAMME.R")
+	*best value is "SAMME.R"
+	*becasue ("SAMME.R")algorithm typically converges faster than "SAMME"
+		 ("SAMME")slower and no accurate as SAMME.R for our data
+
+  -n_estimators=100
+	*tested values for max_depth(50,100,150)
+		*best value is 100
+		*becasue (20)may overfit so the learning procedure is stopped early
+			 (100)suitable number of estimators at which boosting is terminated
+                 	 (5) may underfit so the learning procedure is takes so long with no accurate error
+AdaBoost error is: 0.1333955223880597
+
+=======================================
+DecisionTreeClassifier :
+  -criterion='gini' 
+	*tested values for max_depth("entropy","Gini","log_loss")
+	*best value is "Gini"
+	*becasue ("entropy")less efficient in terms of computing power.
+		 ("Gini")Gini Impurity is better for selecting the best features
+                 ("log_loss") less efficient in terms of accuracy(prediction).
+  -splitter='best'
+	*tested values for max_depth("random","best")
+		*best value is "best"
+		*becasue ("random")takes the feature randomly
+			 ("best")suitable for our data because it takes the feature with the highest importance
+  -max_depth=17
+	*tested values for max_depth(5,10,100)
+	*best value is 10
+	*becasue (100)max_depth too high, then the decision tree might simply overfit(higher error)
+		 (10)good depth for the tree to grow
+                 (5) too little flexibility to capture the patterns and interactions(higher error)
+
+decision tree error is: 0.12779850746268656
+
+=======================================
+Naive Bays :
+  -alpha=0.00001
+	*tested values for max_depth(0.00001,10,100)
+	*best value is 0.00001
+	*becasue (100)causes underfitting
+		 (0.00001) best value to control overfitting,
+                 (5) causes underfitting
+  -force_alpha='True'
+ 	*tested values for max_depth("True","False")
+		*best value is "True"
+		*becasue ("False")it will set alpha to 1e-10
+			 ("True")alpha will remain unchanged as we set it.
+  -fit_prior=True
+	*tested values for max_depth("True","False")
+		*best value is "True"
+		*becasue ("False")takes the same value for all its arguments(uniform prior)
+			 ("True")learn class prior probabilities
+
+NAIVE BAYS error is: 0.31716417910447764
