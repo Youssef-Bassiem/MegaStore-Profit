@@ -122,7 +122,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 #1 AdaBoostClassifier
 from sklearn.ensemble import AdaBoostClassifier
-bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth = 14), algorithm = "SAMME",
+bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth = 14), algorithm = "SAMME.R",
                          n_estimators=100)
 bdt.fit(X_train, Y_train)
 y_prediction = bdt.predict(X_test)
@@ -131,7 +131,7 @@ print(" AdaBoost error is: " + str(error_ad))
 
 #2 DecisionTreeClassifier
 from sklearn import tree
-clf = tree.DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=17)
+clf = tree.DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=10)
 clf.fit(X_train, Y_train)
 y_pred = clf.predict(X_test)
 error_d = np.mean(y_pred != Y_test)
@@ -139,7 +139,7 @@ print(" decision tree error is: " + str(error_d))
 
 #3 NAIVE BAYS
 from sklearn.naive_bayes import MultinomialNB
-bay = MultinomialNB(alpha=0.00001, force_alpha='warn', fit_prior=True, class_prior=None)
+bay = MultinomialNB(alpha=0.00001, force_alpha=True, fit_prior=True)
 bay.fit(X_train, Y_train)
 y_prede = bay.predict(X_test)
 error = np.mean(y_prede != Y_test)
