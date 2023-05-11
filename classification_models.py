@@ -1,16 +1,10 @@
-import pandas as pd
 import numpy as np
-import pickle
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
+import pandas as pd
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
-from sklearn.linear_model import Ridge
-from sklearn import metrics
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import MinMaxScaler
 
 
 # Drop date column and add 3 columns day, month, year
@@ -26,7 +20,7 @@ def dateformat(df, date, year, month, day):
 
 # Get outliers of column using IQR method
 def outlier(df, column):
-    q1, q3 = np.percentile(sorted(df[column]), [25, 75])
+    q1, q3 = np.percentile(sorted(df[column]), [10, 90])
     iqr = q3 - q1
     lower_range = q1 - (1.5 * iqr)
     upper_range = q3 + (1.5 * iqr)
@@ -64,7 +58,6 @@ mega_store['Order ID'] = mega_store_encoder.fit_transform(mega_store['Order ID']
 mega_store['Customer ID'] = mega_store_encoder.fit_transform(mega_store['Customer ID'])
 mega_store['Product ID'] = mega_store_encoder.fit_transform(mega_store['Product ID'])
 
-
 # Date to 3 columns Day, Month, Year
 mega_store = dateformat(mega_store, 'Order Date', 'Order Year', 'Order Month', 'Order Day')
 mega_store = dateformat(mega_store, 'Ship Date', 'Ship Year', 'Ship Month', 'Ship Day')
@@ -79,9 +72,9 @@ if counts == 0:
 mega_store = outlier(mega_store, 'Sales')
 mega_store = outlier(mega_store, 'Discount')
 # mega_store = outlier(mega_store, 'MainCategory')
-mega_store = outlier(mega_store, 'Product ID')
+# mega_store = outlier(mega_store, 'Product ID')
 mega_store = outlier(mega_store, 'Quantity')
-mega_store = outlier(mega_store, 'SubCategory')
+# mega_store = outlier(mega_store, 'SubCategory')
 mega_store = outlier(mega_store, 'Postal Code')
 mega_store = outlier(mega_store, 'Region')
 mega_store = outlier(mega_store, 'State')
@@ -95,10 +88,7 @@ mega_store = outlier(mega_store, 'Order ID')
 mega_store = outlier(mega_store, 'Customer ID')
 mega_store = outlier(mega_store, 'Customer Name')
 
-
-
 scaler = MinMaxScaler()
-
 
 Y_Data = mega_store['ReturnCategory']
 X_Data = mega_store.drop(['ReturnCategory'], axis=1)
@@ -110,9 +100,9 @@ X_Data = fvalue_Best.fit_transform(X_Data, Y_Data)
 X_train, X_test, Y_train, Y_test = train_test_split(
     X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
 
-
 from sklearn.preprocessing import StandardScaler
-Scaler = StandardScaler()
+
+# Scaler = StandardScaler()
 scaler.fit(X_train)
 X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
@@ -120,29 +110,30 @@ X_test = scaler.transform(X_test)
 # 3 classification models
 from sklearn.tree import DecisionTreeClassifier
 
-#1 AdaBoostClassifier
+# 1 AdaBoostClassifier
 from sklearn.ensemble import AdaBoostClassifier
-bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth = 14), algorithm = "SAMME.R",
+
+bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=14), algorithm="SAMME.R",
                          n_estimators=100)
 bdt.fit(X_train, Y_train)
 y_prediction = bdt.predict(X_test)
 error_ad = np.mean(y_prediction != Y_test)
-print(" AdaBoost error is: " + str(error_ad))
+print(" AdaBoost error is: ", bdt.score(X_test, Y_test))
 
-#2 DecisionTreeClassifier
+# 2 DecisionTreeClassifier
 from sklearn import tree
+
 clf = tree.DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=10)
 clf.fit(X_train, Y_train)
 y_pred = clf.predict(X_test)
 error_d = np.mean(y_pred != Y_test)
-print(" decision tree error is: " + str(error_d))
+print(" decision tree error is: ", clf.score(X_test, Y_test))
 
-#3 NAIVE BAYS
+# 3 NAIVE BAYS
 from sklearn.naive_bayes import MultinomialNB
+
 bay = MultinomialNB(alpha=0.00001, force_alpha=True, fit_prior=True)
 bay.fit(X_train, Y_train)
 y_prede = bay.predict(X_test)
 error = np.mean(y_prede != Y_test)
-print(" NAIVE BAYS error is: " + str(error))
-
-
+print(" NAIVE BAYS error is: ", bay.score(X_test, Y_test))
