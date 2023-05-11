@@ -6,71 +6,110 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
 from sklearn.model_selection import train_test_split
 
+from Classification_Models import ClassificationModels
 from Preprocessing import preprocessing
 from Regression_Models import RegressionModels
-from Classification_Models import ClassificationModels
 
-mega_store_regression = pd.read_csv("megastore-regression-dataset.csv")
-mega_store_classification = pd.read_csv("megastore-classification-dataset.csv")
+tst = int(input("Train : 0, Test : 1"))
+flag = int(input("Regression : 0, Classification : 1"))
 
-# X_Data, Y_Data = preprocessing(mega_store_regression, True, False)
-#
-# RegressionModels.ridge(X_Data, Y_Data)
-#
-X_Data, Y_Data = preprocessing(mega_store_classification, False, False)
+# RegressionModels Training
+#####################################################################################
+if not tst and not flag:
+    mega_store_regression = pd.read_csv("megastore-regression-dataset.csv")
+    X_Data, Y_Data = preprocessing(mega_store_regression, True, False)
 
-# ANOVA to get best 10 features for poly model
-fvalue_Best = SelectKBest(f_classif, k=10)
-X_Data = fvalue_Best.fit_transform(X_Data, Y_Data)
-#
-# X_train, X_test, Y_train, Y_test = train_test_split(
-#     X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
-#
-# RegressionModels.poly(X_train, Y_train, X_test, Y_test)
+    X_train, X_test, Y_train, Y_test = train_test_split(
+        X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
 
+    RegressionModels.ridge(X_train, Y_train, X_test, Y_test)
 
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
+    # ANOVA to get best 10 features for poly model
+    fvalue_Best = SelectKBest(f_classif, k=10)
+    X_Data = fvalue_Best.fit_transform(X_Data, Y_Data)
 
-ClassificationModels.adaboost(X_train, Y_train, X_test, Y_test)
-ClassificationModels.tree(X_train, Y_train, X_test, Y_test)
-ClassificationModels.naive(X_train, Y_train, X_test, Y_test)
+    X_train, X_test, Y_train, Y_test = train_test_split(
+        X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
 
-tst = pd.read_csv("megastore-regression-dataset.csv")
-X_Data, Y_Data = preprocessing(tst, True, True)
+    filename = 'Models/Features_selection/fvalue_Best_regression_Model.sav'
+    pickle.dump(fvalue_Best, open(filename, 'wb'))
 
-# ANOVA to get best 10 features for poly model
-fvalue_Best = SelectKBest(f_classif, k=10)
-X_Data = fvalue_Best.fit_transform(X_Data, Y_Data)
+    RegressionModels.poly(X_train, Y_train, X_test, Y_test)
+#####################################################################################
 
-# X_train, X_test, Y_train, Y_test = train_test_split(
-#     X_Data, Y_Data, test_size=0.9, random_state=10, shuffle=True)
+# RegressionModels Load (Test)
+#####################################################################################
+elif tst and not flag:
+    tst = pd.read_csv("megastore-regression-dataset.csv")
+    X_Data, Y_Data = preprocessing(tst, True, True)
 
-filename = 'Polynomial_Regression_Model.sav'
-loaded_model = pickle.load(open(filename, 'rb'))
-print("pickle result : ", loaded_model.score(X_Data, Y_Data))
-print("Mean Square Error poly", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
+    # Reading the model from disk
+    filename = 'Models/Features_selection/fvalue_Best_regression_Model.sav'
+    loaded_model = pickle.load(open(filename, 'rb'))
+    X_Data = loaded_model.transform(X_Data)
 
-X_Data = tst[["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
-              "Postal Code"]]
-filename = 'Ridge_Regression_Model.sav'
-loaded_model = pickle.load(open(filename, 'rb'))
-print("pickle result : ", loaded_model.score(X_Data, Y_Data))
-print("Mean Square Error Ridge", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
+    filename = 'Polynomial_Regression_Model.sav'
+    loaded_model = pickle.load(open(filename, 'rb'))
 
-tst = pd.read_csv("megastore-classification-dataset.csv")
-X_Data, Y_Data = preprocessing(tst, False, True)
+    print("pickle result poly : ", loaded_model.score(X_Data, Y_Data))
+    print("Mean Square Error poly", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
 
-# ANOVA to get best 10 features for poly model
-fvalue_Best = SelectKBest(f_classif, k=10)
-X_Data = fvalue_Best.fit_transform(X_Data, Y_Data)
+    X_Data = tst[["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
+                  "Postal Code"]]
 
-filename = 'AdaBoost_Classification_Model.sav'
-loaded_model = pickle.load(open(filename, 'rb'))
-print("pickle result : ", loaded_model.score(X_Data, Y_Data))
-print("Mean Square Error AdaBoost", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
+    filename = 'Ridge_Regression_Model.sav'
 
-filename = 'Tree_Classification_Model.sav'
-loaded_model = pickle.load(open(filename, 'rb'))
-print("pickle result : ", loaded_model.score(X_Data, Y_Data))
-print("Mean Square Error Tree", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
+    loaded_model = pickle.load(open(filename, 'rb'))
+
+    print("pickle result Ridge : ", loaded_model.score(X_Data, Y_Data))
+    print("Mean Square Error Ridge", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
+####################################################################################
+
+# ClassificationModels Training
+#####################################################################################
+elif not tst and flag:
+    mega_store_classification = pd.read_csv("megastore-classification-dataset.csv")
+
+    X_Data, Y_Data = preprocessing(mega_store_classification, False, False)
+
+    # # ANOVA to get best 10 features for poly model
+    fvalue_Best = SelectKBest(f_classif, k=10)
+    X_Data = fvalue_Best.fit_transform(X_Data, Y_Data)
+
+    X_train, X_test, Y_train, Y_test = train_test_split(
+        X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
+
+    filename = 'Models/Features_selection/fvalue_Best_classification_Model.sav'
+    pickle.dump(fvalue_Best, open(filename, 'wb'))
+
+    ClassificationModels.adaboost(X_train, Y_train, X_test, Y_test)
+    ClassificationModels.tree(X_train, Y_train, X_test, Y_test)
+    ClassificationModels.naive(X_train, Y_train, X_test, Y_test)
+####################################################################################
+
+# ClassificationModels Load (Test)
+#####################################################################################
+elif tst and flag:
+    tst = pd.read_csv("megastore-classification-dataset.csv")
+    X_Data, Y_Data = preprocessing(tst, False, True)
+
+    # Reading the model from disk
+    filename = 'Models/Features_selection/fvalue_Best_classification_Model.sav'
+    loaded_model = pickle.load(open(filename, 'rb'))
+    X_Data = loaded_model.transform(X_Data)
+
+    filename = 'AdaBoost_Classification_Model.sav'
+    loaded_model = pickle.load(open(filename, 'rb'))
+    print("pickle result : ", loaded_model.score(X_Data, Y_Data))
+    print("Mean Square Error AdaBoost", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
+
+    filename = 'Tree_Classification_Model.sav'
+    loaded_model = pickle.load(open(filename, 'rb'))
+    print("pickle result : ", loaded_model.score(X_Data, Y_Data))
+    print("Mean Square Error Tree", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
+
+    filename = 'Naive_Classification_Model.sav'
+    loaded_model = pickle.load(open(filename, 'rb'))
+    print("pickle result : ", loaded_model.score(X_Data, Y_Data))
+    print("Mean Square Error Naive", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
+#####################################################################################

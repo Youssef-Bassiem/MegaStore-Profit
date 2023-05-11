@@ -19,7 +19,7 @@ class RegressionModels:
         print("Mean Square Error poly", metrics.mean_squared_error(y_test, poly_model.predict(x_test)))
 
         # saving Polynomial Model
-        filename = 'Polynomial_Regression_Model.sav'
+        filename = 'Models/Regression/Polynomial_Regression_Model.sav'
         pickle.dump(poly_model, open(filename, 'wb'))
 
         # Reading the model from disk
@@ -27,17 +27,18 @@ class RegressionModels:
         print("pickle result : ", loaded_model.score(x_test, y_test))
 
     @staticmethod
-    def ridge(mega_store, y_data):
+    def ridge(x_train, y_train, x_test, y_test):
         # ridge with bad 8 features
-        x = mega_store[["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
-                        "Postal Code"]]
+        x_train = x_train[
+            ["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
+             "Postal Code"]]
 
-        x_train, x_test, y_train, y_test = train_test_split(
-            x, y_data, test_size=0.2, random_state=10, shuffle=True)
-
-        # clc = LinearRegression()
-        # clc.fit(x_train, y_train)
-        # print("cls Score : ", clc.score(x_test, y_test))
+        x_test = x_test[
+            ["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
+             "Postal Code"]]
+        clc = LinearRegression()
+        clc.fit(x_train, y_train)
+        print("cls Score : ", clc.score(x_test, y_test))
 
         ridge_model = Ridge(alpha=1.0)
         ridge_model.fit(x_train, y_train)
@@ -46,7 +47,7 @@ class RegressionModels:
         print("Mean Square Error ridge", metrics.mean_squared_error(y_test, ridge_model.predict(x_test)))
 
         # saving Ridge Model
-        filename = 'Ridge_Regression_Model.sav'
+        filename = 'Models/Regression/Ridge_Regression_Model.sav'
         pickle.dump(ridge_model, open(filename, 'wb'))
 
         # Reading the model from disk
