@@ -1,8 +1,9 @@
+import pickle
+
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
-import pickle
 
 encoder = LabelEncoder()
 
@@ -174,8 +175,7 @@ def preprocessing(df, flag, tst):
     df = dateformat(df, 'Order Date', 'Order Year', 'Order Month', 'Order Day')
     df = dateformat(df, 'Ship Date', 'Ship Year', 'Ship Month', 'Ship Day')
 
-    # Drop unnecessary column and lowest 5 correlation
-    # corr = abs(df.corr(numeric_only=True))
+    df.fillna(df.mean(numeric_only=True).round(1), inplace=True)
 
     if count == 0:
         df.drop(['Country', 'Ship Month', 'Order Month', 'Order Day', 'Row ID', 'Product Name'],
@@ -187,6 +187,7 @@ def preprocessing(df, flag, tst):
     scaler = MinMaxScaler()
     if flag:
         df = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+        df.fillna(df.mean(numeric_only=True).round(1), inplace=True)
         return df.drop(['Profit'], axis=1), df['Profit']
 
     else:

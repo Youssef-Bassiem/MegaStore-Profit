@@ -48,7 +48,7 @@ elif tst and not flag:
     loaded_model = pickle.load(open(filename, 'rb'))
     X_Data = loaded_model.transform(X_Data)
 
-    filename = 'Polynomial_Regression_Model.sav'
+    filename = 'Models/Regression/Polynomial_Regression_Model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
 
     print("pickle result poly : ", loaded_model.score(X_Data, Y_Data))
@@ -57,7 +57,7 @@ elif tst and not flag:
     X_Data = tst[["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
                   "Postal Code"]]
 
-    filename = 'Ridge_Regression_Model.sav'
+    filename = 'Models/Regression/Ridge_Regression_Model.sav'
 
     loaded_model = pickle.load(open(filename, 'rb'))
 
@@ -98,17 +98,17 @@ elif tst and flag:
     loaded_model = pickle.load(open(filename, 'rb'))
     X_Data = loaded_model.transform(X_Data)
 
-    filename = 'AdaBoost_Classification_Model.sav'
+    filename = 'Models/Classification/AdaBoost_Classification_Model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
     print("pickle result : ", loaded_model.score(X_Data, Y_Data))
     print("Mean Square Error AdaBoost", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
 
-    filename = 'Tree_Classification_Model.sav'
+    filename = 'Models/Classification/Tree_Classification_Model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
     print("pickle result : ", loaded_model.score(X_Data, Y_Data))
     print("Mean Square Error Tree", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
 
-    filename = 'Naive_Classification_Model.sav'
+    filename = 'Models/Classification/Naive_Classification_Model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
     print("pickle result : ", loaded_model.score(X_Data, Y_Data))
     print("Mean Square Error Naive", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))

@@ -3,7 +3,6 @@ import pickle
 from sklearn import metrics
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
 
@@ -36,9 +35,9 @@ class RegressionModels:
         x_test = x_test[
             ["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
              "Postal Code"]]
-        clc = LinearRegression()
-        clc.fit(x_train, y_train)
-        print("cls Score : ", clc.score(x_test, y_test))
+        # clc = LinearRegression()
+        # clc.fit(x_train, y_train)
+        # print("cls Score : ", clc.score(x_test, y_test))
 
         ridge_model = Ridge(alpha=1.0)
         ridge_model.fit(x_train, y_train)
