@@ -22,17 +22,19 @@ if not tst and not flag:
     X_train, X_test, Y_train, Y_test = train_test_split(
         X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
 
-    RegressionModels.ridge(X_train, Y_train, X_test, Y_test)
-
     # ANOVA to get best 10 features for poly model
     fvalue_Best = SelectKBest(f_classif, k=10)
-    X_Data = fvalue_Best.fit_transform(X_Data, Y_Data)
+    fvalue_Best.fit_transform(X_train, Y_train)
 
-    X_train, X_test, Y_train, Y_test = train_test_split(
-        X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
-
+    # Get columns to keep and create new dataframe with those only
+    cols_index = fvalue_Best.get_support(indices=True)
     filename = 'Models/Features_selection/fvalue_Best_regression_Model.sav'
     pickle.dump(fvalue_Best, open(filename, 'wb'))
+
+    X_test = X_test.iloc[:, cols_index]
+    X_train = X_train.iloc[:, cols_index]
+
+    RegressionModels.ridge(X_train, Y_train, X_test, Y_test)
 
     RegressionModels.poly(X_train, Y_train, X_test, Y_test)
 #####################################################################################
@@ -46,16 +48,16 @@ elif tst and not flag:
     # Reading the model from disk
     filename = 'Models/Features_selection/fvalue_Best_regression_Model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
-    X_Data = loaded_model.transform(X_Data)
+    loaded_model.transform(X_Data)
+
+    cols_index = loaded_model.get_support(indices=True)
+    X_Data = X_Data.iloc[:, cols_index]
 
     filename = 'Models/Regression/Polynomial_Regression_Model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
 
     print("pickle result poly : ", loaded_model.score(X_Data, Y_Data))
     print("Mean Square Error poly", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
-
-    X_Data = tst[["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
-                  "Postal Code"]]
 
     filename = 'Models/Regression/Ridge_Regression_Model.sav'
 
@@ -72,12 +74,18 @@ elif not tst and flag:
 
     X_Data, Y_Data = preprocessing(mega_store_classification, False, False)
 
-    # # ANOVA to get best 10 features for poly model
-    fvalue_Best = SelectKBest(f_classif, k=10)
-    X_Data = fvalue_Best.fit_transform(X_Data, Y_Data)
-
     X_train, X_test, Y_train, Y_test = train_test_split(
         X_Data, Y_Data, test_size=0.2, random_state=10, shuffle=True)
+
+    # ANOVA to get best 10 features for poly model
+    fvalue_Best = SelectKBest(f_classif, k=10)
+    fvalue_Best.fit_transform(X_train, Y_train)
+
+    # Get columns to keep and create new dataframe with those only
+    cols_index = fvalue_Best.get_support(indices=True)
+
+    X_test = X_test.iloc[:, cols_index]
+    X_train = X_train.iloc[:, cols_index]
 
     filename = 'Models/Features_selection/fvalue_Best_classification_Model.sav'
     pickle.dump(fvalue_Best, open(filename, 'wb'))
@@ -96,10 +104,14 @@ elif tst and flag:
     # Reading the model from disk
     filename = 'Models/Features_selection/fvalue_Best_classification_Model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
-    X_Data = loaded_model.transform(X_Data)
+    loaded_model.transform(X_Data)
+
+    cols_index = loaded_model.get_support(indices=True)
+    X_Data = X_Data.iloc[:, cols_index]
 
     filename = 'Models/Classification/AdaBoost_Classification_Model.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
+
     print("pickle result : ", loaded_model.score(X_Data, Y_Data))
     print("Mean Square Error AdaBoost", metrics.mean_squared_error(Y_Data, loaded_model.predict(X_Data)))
 

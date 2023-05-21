@@ -27,18 +27,6 @@ class RegressionModels:
 
     @staticmethod
     def ridge(x_train, y_train, x_test, y_test):
-        # ridge with bad 8 features
-        x_train = x_train[
-            ["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
-             "Postal Code"]]
-
-        x_test = x_test[
-            ["Ship Mode", "Ship Day", "Ship Year", "Order Year", "Customer ID", "Customer Name", "Order ID",
-             "Postal Code"]]
-        # clc = LinearRegression()
-        # clc.fit(x_train, y_train)
-        # print("cls Score : ", clc.score(x_test, y_test))
-
         ridge_model = Ridge(alpha=1.0)
         ridge_model.fit(x_train, y_train)
 
