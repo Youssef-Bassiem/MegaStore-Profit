@@ -10,8 +10,8 @@ from Classification_Models import ClassificationModels
 from Preprocessing import preprocessing
 from Regression_Models import RegressionModels
 
-tst = int(input("Train : 0, Test : 1"))
-flag = int(input("Regression : 0, Classification : 1"))
+tst = int(input("Train : 0, Test : 1\n"))
+flag = int(input("Regression : 0, Classification : 1\n"))
 
 # RegressionModels Training
 #####################################################################################

@@ -6,7 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 
 encoder = LabelEncoder()
-
+scaler = MinMaxScaler()
 
 # Drop date column and add 3 columns day, month, year
 def dateformat(df, date, year, month, day):
@@ -28,6 +28,30 @@ def outlier(df, column):
     df.drop(df[(df[column] > upper_range) | (df[column] < lower_range)].index, inplace=True)
     return df
 
+def scale_save(df, flag):
+    if not flag:
+        filename = 'Models/Scaler/Regression_Scaling.sav'
+        x = pd.DataFrame(scaler.fit_transform(df, columns=df.columns))
+        pickle.dump(scaler, open(filename, 'wb'))
+        return x
+    else:
+        filename = 'Models/Scaler/Classification_Scaling.sav'
+        df = pd.DataFrame(scaler.fit_transform(df, columns=df.columns))
+        pickle.dump(scaler, open(filename, 'wb'))
+        return df
+    
+def scale_load(df, flag):
+    if not flag:
+        filename = 'Models/Scaler/Regression_Scaling.sav'
+        loaded_model = pickle.load(open(filename, 'rb'))
+        df = loaded_model.transform(df, columns=df.columns)
+        return df
+    else:
+        filename = 'Models/Scaler/Classification_Scaling.sav'
+        loaded_model = pickle.load(open(filename, 'rb'))
+        df = loaded_model.transform(df, columns=df.columns)
+        return df
+        
 
 # Encode to numeric columns
 def encode_save(df, flag):
@@ -83,7 +107,7 @@ def encode_save(df, flag):
     filename = 'Models/Encoding/encoder_Product_ID_Model.sav'
     pickle.dump(encoder, open(filename, 'wb'))
 
-    if not flag:
+    if not flag and 'ReturnCategory' in df.columns:
         df['ReturnCategory'] = encoder.fit_transform(df['ReturnCategory'])
         filename = 'Models/Encoding/encoder_ReturnCategory_Model.sav'
         pickle.dump(encoder, open(filename, 'wb'))
@@ -143,7 +167,7 @@ def encode_load(df, flag):
     loaded_model = pickle.load(open(filename, 'rb'))
     df['Product ID'] = loaded_model.transform(df['Product ID'])
 
-    if not flag:
+    if not flag and 'ReturnCategory' in df.columns:
         filename = 'Models/Encoding/encoder_ReturnCategory_Model.sav'
         loaded_model = pickle.load(open(filename, 'rb'))
         df['ReturnCategory'] = loaded_model.transform(df['ReturnCategory'])
@@ -183,14 +207,18 @@ def preprocessing(df, flag, tst):
     else:
         df.drop(['Ship Month', 'Order Month', 'Order Day', 'Row ID', 'Product Name'],
                 axis=1, inplace=True)
+    
 
-    scaler = MinMaxScaler()
     if flag:
         df = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
-        df.fillna(df.mean(numeric_only=True).round(1), inplace=True)
-        return df.drop(['Profit'], axis=1), df['Profit']
-
+        if 'Profit' in df.columns:
+            return df.drop(['Profit'], axis=1), df['Profit']
+        else:
+            return df
     else:
-        y_data = df['ReturnCategory']
-        df.drop(['ReturnCategory'], inplace=True, axis=1)
-        return pd.DataFrame(scaler.fit_transform(df), columns=df.columns), y_data
+        if 'ReturnCategory' in df.columns:
+            y_data = df['ReturnCategory']
+            df.drop(['ReturnCategory'], inplace=True, axis=1)
+            return pd.DataFrame(scaler.fit_transform(df), columns=df.columns), y_data
+        else:
+            return pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
