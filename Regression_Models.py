@@ -10,7 +10,7 @@ from sklearn.preprocessing import PolynomialFeatures
 class RegressionModels:
     @staticmethod
     def poly(x_train, y_train, x_test, y_test):
-        poly_model = make_pipeline(PolynomialFeatures(degree=3), LinearRegression(fit_intercept=False))
+        poly_model = make_pipeline(PolynomialFeatures(degree=3), LinearRegression())
 
         # fit model
         poly_model.fit(x_train, y_train)

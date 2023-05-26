@@ -42,7 +42,8 @@ if not tst and not flag:
 # RegressionModels Load (Test)
 #####################################################################################
 elif tst and not flag:
-    tst = pd.read_csv("megastore-regression-dataset.csv")
+    tst = pd.read_csv("megastore-tas-test-regression.csv")
+    # tst = pd.read_csv("megastore-regression-dataset.csv")
     X_Data, Y_Data = preprocessing(tst, True, True)
 
     # Reading the model from disk
@@ -98,7 +99,8 @@ elif not tst and flag:
 # ClassificationModels Load (Test)
 #####################################################################################
 elif tst and flag:
-    tst = pd.read_csv("megastore-classification-dataset.csv")
+    tst = pd.read_csv("megastore-tas-test-classification.csv")
+    # tst = pd.read_csv("megastore-classification-dataset.csv")
     X_Data, Y_Data = preprocessing(tst, False, True)
 
     # Reading the model from disk
